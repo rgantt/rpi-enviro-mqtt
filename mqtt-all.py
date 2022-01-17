@@ -250,7 +250,12 @@ def main():
 def publish_data(mqtt, topic, publisher, values):
     # Publish the individual values to nested topics
     mqtt.publish("environment/temperature/{}".format(publisher), values["temperature"])
-    # pressure, humidity, oxidised, reduced, nh3, lux
+    mqtt.publish("environment/pressure/{}".format(publisher), values["pressure"])
+    mqtt.publish("environment/humidity/{}".format(publisher), values["humidity"])
+    mqtt.publish("environment/oxidised/{}".format(publisher), values["oxidised"])
+    mqtt.publish("environment/reduced/{}".format(publisher), values["reduced"])
+    mqtt.publish("environment/nh3/{}".format(publisher), values["nh3"])
+    mqtt.publish("environment/lux/{}".format(publisher), values["lux"])
     # then the particulate matter sensor stuff, which may or may not be present
 
     # Publish composite object to "normal" topic
