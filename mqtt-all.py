@@ -240,9 +240,9 @@ def main():
             print(values)
             publish_data(mqtt_client, args.topic, args.publisher, values)
             display_status(disp, args.broker)
-            time.sleep(args.interval)
         except Exception as e:
             print(e)
+        time.sleep(args.interval)
 
 # Publish the enviroplus data along with the decomposed data to individual topics
 def publish_data(mqtt, topic, publisher, values):
