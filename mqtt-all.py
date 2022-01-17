@@ -256,8 +256,11 @@ def publish_data(mqtt, topic, publisher, values):
     # mqtt.publish("environment/oxidised/{}".format(publisher), values["oxidised"])
     # mqtt.publish("environment/reduced/{}".format(publisher), values["reduced"])
     # mqtt.publish("environment/nh3/{}".format(publisher), values["nh3"])
-    mqtt.publish("environment/lux/{}".format(publisher), values["lux"])
-    logging.info("Lux: {}", values["lux"])
+    if ("lux" in values):
+        mqtt.publish("environment/lux/{}".format(publisher), values["lux"])
+        logging.info("Lux: {}", values["lux"])
+    else:
+        logging.warn("No value for lux")
     # then the particulate matter sensor stuff, which may or may not be present
 
     # Publish composite object to "normal" topic
