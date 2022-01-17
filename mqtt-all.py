@@ -64,10 +64,10 @@ def read_bme280(bme280):
     values["temperature"] = int(comp_temp)
     values["pressure"] = int(bme280.get_pressure())
     values["humidity"] = int(bme280.get_humidity())
-    data = gas.read_all()
-    values["oxidised"] = int(data.oxidising / 1000)
-    values["reduced"] = int(data.reducing / 1000)
-    values["nh3"] = int(data.nh3 / 1000)
+    # data = gas.read_all()
+    # values["oxidised"] = int(data.oxidising / 1000)
+    # values["reduced"] = int(data.reducing / 1000)
+    # values["nh3"] = int(data.nh3 / 1000)
     values["lux"] = int(ltr559.get_lux())
     return values
 
