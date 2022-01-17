@@ -44,13 +44,13 @@ DEFAULT_MQTT_PUBLISHER_NAME = "all"
 # mqtt callbacks
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
-        print("connected OK")
+        logging.info("connected OK")
     else:
-        print("Bad connection Returned code=", rc)
+        logging.info("Bad connection Returned code=", rc)
 
 
 def on_publish(client, userdata, mid):
-    print("mid: " + str(mid))
+    logging.info("mid: " + str(mid))
 
 
 # Read values from BME280 and return as dict
@@ -177,7 +177,7 @@ def main():
     device_serial_number = get_serial_number()
     device_id = "raspi-" + device_serial_number
 
-    print(
+    logging.info(
         f"""mqtt-all.py - Reads Enviro plus data and sends over mqtt.
 
     broker: {args.broker}
@@ -219,14 +219,14 @@ def main():
         pms5003 = PMS5003()
         pm_values = pms5003.read()
         HAS_PMS = True
-        print("PMS5003 sensor is connected")
+        logging.info("PMS5003 sensor is connected")
     except SerialTimeoutError:
-        print("No PMS5003 sensor connected")
+        logging.info("No PMS5003 sensor connected")
 
     # Display Raspberry Pi serial and Wi-Fi status
-    print("RPi serial: {}".format(device_serial_number))
-    print("Wi-Fi: {}\n".format("connected" if check_wifi() else "disconnected"))
-    print("MQTT broker IP: {}".format(args.broker))
+    logging.info("RPi serial: {}".format(device_serial_number))
+    logging.info("Wi-Fi: {}\n".format("connected" if check_wifi() else "disconnected"))
+    logging.info("MQTT broker IP: {}".format(args.broker))
 
     # Main loop to read data, display, and send over mqtt
     mqtt_client.loop_start()
@@ -237,11 +237,11 @@ def main():
                 pms_values = read_pms5003(pms5003)
                 values.update(pms_values)
             values["serial"] = device_serial_number
-            print(values)
+            logging.info(values)
             publish_data(mqtt_client, args.topic, args.publisher, values)
             display_status(disp, args.broker)
         except Exception as e:
-            print(e)
+            logging.error(e)
         time.sleep(args.interval)
 
 # Publish the enviroplus data along with the decomposed data to individual topics
@@ -250,6 +250,7 @@ def publish_data(mqtt, topic, publisher, values):
     mqtt.publish("environment/temperature/{}".format(publisher), values["temperature"])
     mqtt.publish("environment/pressure/{}".format(publisher), values["pressure"])
     mqtt.publish("environment/humidity/{}".format(publisher), values["humidity"])
+    # the gas sensors seem to be on the fritz...
     # mqtt.publish("environment/oxidised/{}".format(publisher), values["oxidised"])
     # mqtt.publish("environment/reduced/{}".format(publisher), values["reduced"])
     # mqtt.publish("environment/nh3/{}".format(publisher), values["nh3"])
