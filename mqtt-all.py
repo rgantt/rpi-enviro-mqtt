@@ -5,6 +5,7 @@ Example run: python3 mqtt-all.py --broker 192.168.1.164 --topic enviro
 """
 #!/usr/bin/env python3
 
+import logging
 import argparse
 import ST7735
 import time
@@ -38,6 +39,7 @@ DEFAULT_MQTT_BROKER_IP = "localhost"
 DEFAULT_MQTT_BROKER_PORT = 1883
 DEFAULT_MQTT_TOPIC = "enviroplus"
 DEFAULT_READ_INTERVAL = 5
+DEFAULT_MQTT_PUBLISHER_NAME = "all"
 
 # mqtt callbacks
 def on_connect(client, userdata, flags, rc):
@@ -151,6 +153,12 @@ def main():
         help="mqtt broker IP",
     )
     parser.add_argument(
+        "--publisher",
+        default=DEFAULT_MQTT_PUBLISHER_NAME,
+        type=str,
+        help="publisher identifier",
+    )
+    parser.add_argument(
         "--port",
         default=DEFAULT_MQTT_BROKER_PORT,
         type=int,
@@ -176,6 +184,7 @@ def main():
 
     broker: {args.broker}
     client_id: {device_id}
+    publisher: {args.publisher}
     port: {args.port}
     topic: {args.topic}
 
@@ -184,7 +193,11 @@ def main():
     """
     )
 
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logger.getLogger(__name__)
+
     mqtt_client = mqtt.Client(client_id=device_id)
+    mqtt_client.enable_logger(logger)
     mqtt_client.on_connect = on_connect
     mqtt_client.on_publish = on_publish
     mqtt_client.connect(args.broker, port=args.port)
@@ -227,12 +240,21 @@ def main():
                 values.update(pms_values)
             values["serial"] = device_serial_number
             print(values)
-            mqtt_client.publish(args.topic, json.dumps(values))
+            publish_data(args.topic, args.publisher, values)
             display_status(disp, args.broker)
             time.sleep(args.interval)
         except Exception as e:
             print(e)
 
+# Publish the enviroplus data along with the decomposed data to individual topics
+def publish_data(topic, publisher, values):
+    # Publish the individual values to nested topics
+    mqtt_client.publish("environment/temperature/{}".format(publisher), values["temperature"])
+    # pressure, humidity, oxidised, reduced, nh3, lux
+    # then the particulate matter sensor stuff, which may or may not be present
+
+    # Publish composite object to "normal" topic
+    mqtt_client.publish("enviroplus", json.dumps(values))
 
 if __name__ == "__main__":
     main()
