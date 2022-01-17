@@ -240,21 +240,21 @@ def main():
                 values.update(pms_values)
             values["serial"] = device_serial_number
             print(values)
-            publish_data(args.topic, args.publisher, values)
+            publish_data(mqtt_client, args.topic, args.publisher, values)
             display_status(disp, args.broker)
             time.sleep(args.interval)
         except Exception as e:
             print(e)
 
 # Publish the enviroplus data along with the decomposed data to individual topics
-def publish_data(topic, publisher, values):
+def publish_data(mqtt, topic, publisher, values):
     # Publish the individual values to nested topics
-    mqtt_client.publish("environment/temperature/{}".format(publisher), values["temperature"])
+    mqtt.publish("environment/temperature/{}".format(publisher), values["temperature"])
     # pressure, humidity, oxidised, reduced, nh3, lux
     # then the particulate matter sensor stuff, which may or may not be present
 
     # Publish composite object to "normal" topic
-    mqtt_client.publish("enviroplus", json.dumps(values))
+    mqtt.publish("enviroplus", json.dumps(values))
 
 if __name__ == "__main__":
     main()
