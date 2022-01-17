@@ -194,7 +194,7 @@ def main():
     )
 
     logging.basicConfig(level=logging.DEBUG)
-    logger = logger.getLogger(__name__)
+    logger = logging.getLogger(__name__)
 
     mqtt_client = mqtt.Client(client_id=device_id)
     mqtt_client.enable_logger(logger)
