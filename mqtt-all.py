@@ -248,17 +248,17 @@ def main():
 def publish_data(mqtt, topic, publisher, values):
     # Publish the individual values to nested topics
     mqtt.publish("environment/temperature/{}".format(publisher), values["temperature"])
-    logging.info("Temperature: {}", values["temperature"])
+    logging.info("Temperature: {}".format(values["temperature"]))
     mqtt.publish("environment/pressure/{}".format(publisher), values["pressure"])
-    logging.info("Pressure: {}", values["pressure"])
+    logging.info("Pressure: {}".format(values["pressure"]))
     mqtt.publish("environment/humidity/{}".format(publisher), values["humidity"])
-    logging.info("Humidity: {}", values["humidity"])
+    logging.info("Humidity: {}".format(values["humidity"]))
     # mqtt.publish("environment/oxidised/{}".format(publisher), values["oxidised"])
     # mqtt.publish("environment/reduced/{}".format(publisher), values["reduced"])
     # mqtt.publish("environment/nh3/{}".format(publisher), values["nh3"])
     if ("lux" in values):
         mqtt.publish("environment/lux/{}".format(publisher), values["lux"])
-        logging.info("Lux: {}", values["lux"])
+        logging.info("Lux: {}".format(values["lux"]))
     else:
         logging.warn("No value for lux")
     # then the particulate matter sensor stuff, which may or may not be present
